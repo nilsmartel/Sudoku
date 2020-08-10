@@ -13,7 +13,7 @@ struct Csp{X, D}
     constraints :: Array{Constraint{X},1}
 end
 
-function cross(a, b)
+function cross(a, b) ::Array{Tuple{Int, Int}, 1}
     v = []
     for first in a
         for second in b
@@ -23,40 +23,60 @@ function cross(a, b)
     return v
 end
 
-function stepnum(number :: UInt, step :: UUInt) :: UInt {
+function stepnum(number :: Int, step :: Int) :: Int
     floor(number / step) * step
-}
+end
 
 # returns a list of all fields a given position on a sudoku grid
 # needs to differ from
-function related_fields(field :: (UInt, UInt)) :: Set{(UInt, UInt)}
+function related_fields(field :: Tuple{Int, Int}) :: Set{Tuple{Int, Int}}
     row = stepnum(field[2], 3)
     col = stepnum(field[1], 3)
 
-    squares = cross(row:(row+3), col:(col+3))
-    vertical = map(0:9) do y (field[1], y) end
-    horizontal = map(0:9) do x (x, field[2]) end
-    
-    s = Set(squares..., vertical..., horizontal...)
+    squares = cross(row:(row+3), col:(col+3)) :: Array{Tuple{Int, Int}, 1}
+    vertical = map(0:9) do y
+        (field[1], y)
+    end
 
-    # fields musn't be unequal to iteself, so we remove it from the set
+    horizontal = map(0:9) do x
+        (x, field[2])
+    end
+
+    s = Set([squares..., vertical..., horizontal...]) :: Set{Tuple{Int, Int}}
+
+    # fields musn't be unequal to themselfs, so we remove it from the set
     delete!(s, field)
 
     s
 end
-    
 
-function sudoko_csp() :: Csp{(UInt,UInt),UInt}
-    variables = cross(0:9, 0:9)::Array{(UInt,UInt), 1}
-    domains = 0:9
-    constraints = begin
-        variables |> map do var
-            rel = related_fields(var)
-            map(rel) do other Constraint([var, other], !=) end
+function unequal(a :: Int, b :: Int) :: Bool
+    a != b
+end
+
+function flatten(array)
+    r = []
+    for sub in array
+        for elem in sub
+            push!(r, elem)
         end
     end
 
-    Csp(variables, domains, constraints)
+    r
+end
+
+function sudoko_csp() :: Csp{Tuple{Int,Int},Int}
+    variables = cross(0:9, 0:9) # ::Array{Tuple{Int,Int}, 1}
+    domains = 0:9 |> collect
+    constraints = begin
+        variables .|> (var) -> begin
+            rel = related_fields(var) |> collect
+
+            rel .|> r -> Constraint([var, r], unequal)
+        end
+    end
+
+    Csp(variables, domains, vcat(constraints...))
 end
 
 sample = sudoko_csp()
