@@ -33,11 +33,11 @@ function related_fields(field :: Tuple{Int, Int}) :: Set{Tuple{Int, Int}}
     col = stepnum(field[1], 3)
 
     squares = cross(row:(row+3), col:(col+3)) :: Array{Tuple{Int, Int}, 1}
-    vertical = map(0:9) do y
+    vertical = map(1:9) do y
         (field[1], y)
     end
 
-    horizontal = map(0:9) do x
+    horizontal = map(1:9) do x
         (x, field[2])
     end
 
@@ -65,8 +65,8 @@ function flatten(array)
 end
 
 function sudoko_csp() :: Csp{Tuple{Int,Int},Int}
-    variables = cross(0:9, 0:9) # ::Array{Tuple{Int,Int}, 1}
-    domains = 0:9 |> collect
+    variables = cross(1:9, 1:9) # ::Array{Tuple{Int,Int}, 1}
+    domains = 1:9 |> collect
     constraints = begin
         variables .|> (var) -> begin
             rel = related_fields(var) |> collect
@@ -169,7 +169,7 @@ struct Sudoko
 end
 
 function solve_sudoko(field :: Sudoko)
-    assignmentset = Dict((a,b) => Set(0:9) for a in 0:9, b in 0:9) :: Dict{Tuple{Int, Int}, Set{Int}}
+    assignmentset = Dict((a,b) => Set(1:9) for a in 1:9, b in 1:9) :: Dict{Tuple{Int, Int}, Set{Int}}
 
     for key in field.assignment.keys
         assignmentset[key] = field.assignment[key] |> Set
