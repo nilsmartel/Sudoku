@@ -169,11 +169,7 @@ struct Sudoko
 end
 
 function solve_sudoko(field :: Sudoko)
-    assignmentset = Dict{Tuple{Int, Int}, Set{Int}}()
-
-    for gridfield in cross(0:9,0:9)
-        assignmentset[gridfield] = Set(0:9)
-    end
+    assignmentset = Dict((a,b) => Set(0:9) for a in 0:9, b in 0:9) :: Dict{Tuple{Int, Int}, Set{Int}}
 
     for key in field.assignment.keys
         assignmentset[key] = field.assignment[key] |> Set
