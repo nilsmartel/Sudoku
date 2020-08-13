@@ -79,7 +79,7 @@ function sudoko_csp() :: Csp{Tuple{Int,Int},Int}
 end
 
 function issolution(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
-    d = Dict{Tuple{Int, Int}, Int}
+    d = Dict{Tuple{Int, Int}, Int}()
     for k in assignment.keys
         v = assignment[k]
         if length(v) != 1
@@ -100,7 +100,7 @@ function issolution(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
 end
 
 # enforces arc consistency using the ac3 algorithm
-function ac3(csp, assignment) 
+function ac3(csp, assignment)
     assignment = assignment |> deepcopy
     queue = csp.checkfunction |> copy
 
@@ -152,14 +152,32 @@ function backtrace(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
         size(assignment[key]) > 1
     end |> first
 
-    for d in csp.domain 
+    for d in csp.domain
         assignment[v] = d
-        
-        solution = backtrace(csp, copy(assignment))    
+
+        solution = backtrace(csp, copy(assignment))
         if solution !== nothing
             return solution
         end
     end
 
     return nothing
+end
+
+struct Sudoko
+    assignment :: Dict{Tuple{Int, Int}, Int}
+end
+
+function solve_sudoko(field :: Sudoko)
+    assignmentset = Dict{Tuple{Int, Int}, Set{Int}}()
+
+    for gridfield in cross(0:9,0:9)
+        assignmentset[gridfield] = Set(0:9)
+    end
+
+    for key in field.assignment.keys
+        assignmentset[key] = field.assignment[key] |> Set
+    end
+
+    backtrace(sudoko_csp(), assignmentset)
 end
