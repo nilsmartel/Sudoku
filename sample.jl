@@ -1,3 +1,5 @@
+#!/usr/local/bin/julia
+
 include("src/csp.jl")
 
 # illegal value
@@ -22,7 +24,7 @@ let easy = [1 7 9  6 n 3  5 n 4;
     end
 
     assignmentset = Dict((x, y) => get(x, y) for x in 1:9, y in 1:9 if get(x, y) !== n)
-    
+
     field = Sudoko(assignmentset)
 
     solution = solve_sudoko(field)
