@@ -100,8 +100,9 @@ function issolution(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
 end
 
 # enforces arc consistency using the ac3 algorithm
-function ac3(csp, assignment)
-    assignment = assignment |> deepcopy
+# mutates assignment in the process
+# returns false, if domain of one variable is empty 
+function ac3!(csp, assignment)
     queue = csp.constraints |> copy
 
     function domain(var)
@@ -125,7 +126,7 @@ function ac3(csp, assignment)
                 # if no values are left in domain of variable
                 # stop AC-3.
                 if assignment[var] |> size == 0
-                    return nothing
+                    return false
                 end
 
                 foreach(csp.constraints) do c
@@ -137,15 +138,15 @@ function ac3(csp, assignment)
         end
     end
 
-    assignment
+    true
 end
 
 
 
 function backtrace(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
-    assignment = ac3(csp, assignment)
+    # enforce arc consistency
     # fail if one variable has an empty domain
-    if assignment === nothing
+    if ! ac3!(csp, assignment)
         return nothing
     end
 
