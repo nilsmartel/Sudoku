@@ -144,18 +144,25 @@ end
 
 function backtrace(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
     assignment = ac3(csp, assignment)
+    # fail if one variable has an empty domain
+    if assignment === nothing
+        return nothing
+    end
+
     let s = issolution(csp, assignment)
         if s !== nothing
             return s
         end
     end
 
-    # TODO: MRV or something clever
     # pick next variable to be assigned.
     # filter out all variables with domain size of 1, since these have a fixed assignment
-    var = filter(keys(assignment)) do key
+    variables_left = filter(keys(assignment)) do key
         size(assignment[key]) > 1
-    end |> first
+    end
+
+    # TODO clever heuristic, other than pick first one (e.g. MRV)
+    var = first(variables_left)
 
     for d in csp.domain
         assignment[var] = d
