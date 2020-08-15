@@ -144,9 +144,6 @@ function backtrace(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
         end
     end
 
-    # check csp ?-> return assignment as solution
-    # arc consistency
-
     # pick next value to be assigned
     # TODO: MRV or something clever
     v = filter(assignment |> values) do key
