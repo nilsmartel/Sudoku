@@ -1,6 +1,6 @@
 #!/usr/local/bin/julia
 
-include("src/csp.jl")
+include("src/sudoku.jl")
 
 # illegal value
 n = 10
