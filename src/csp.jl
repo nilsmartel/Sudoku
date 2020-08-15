@@ -125,7 +125,7 @@ function ac3!(csp, assignment)
 
                 # if no values are left in domain of variable
                 # stop AC-3.
-                if assignment[var] |> size == 0
+                if assignment[var] |> length == 0
                     return false
                 end
 
@@ -159,7 +159,7 @@ function backtrace(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
     # pick next variable to be assigned.
     # filter out all variables with domain size of 1, since these have a fixed assignment
     variables_left = filter(keys(assignment)) do key
-        size(assignment[key]) > 1
+        length(assignment[key]) > 1
     end
 
     # TODO clever heuristic, other than pick first one (e.g. MRV)
