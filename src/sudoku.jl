@@ -1,5 +1,24 @@
 include("csp.jl")
 
+struct Sudoko
+    assignment :: Dict{Tuple{Int, Int}, Int}
+end
+
+function solve_sudoko(field :: Sudoko)
+    assignmentset = Dict((a,b) => Set(1:9) for a in 1:9, b in 1:9) :: Dict{Tuple{Int, Int}, Set{Int}}
+
+    for key in keys(field.assignment)
+        value = field.assignment[key]
+        assignmentset[key] = Set(value)
+    end
+
+    backtrace(sudoko_csp(), assignmentset)
+end
+
+"""
+Util function from now on
+"""
+
 function cross(a, b) ::Array{Tuple{Int, Int}, 1}
     v = []
     for first in a
@@ -64,19 +83,4 @@ function sudoko_csp() :: Csp{Tuple{Int,Int},Int}
     end
 
     Csp(variables, domains, vcat(constraints...))
-end
-
-struct Sudoko
-    assignment :: Dict{Tuple{Int, Int}, Int}
-end
-
-function solve_sudoko(field :: Sudoko)
-    assignmentset = Dict((a,b) => Set(1:9) for a in 1:9, b in 1:9) :: Dict{Tuple{Int, Int}, Set{Int}}
-
-    for key in keys(field.assignment)
-        value = field.assignment[key]
-        assignmentset[key] = Set(value)
-    end
-
-    backtrace(sudoko_csp(), assignmentset)
 end
