@@ -32,7 +32,7 @@ function related_fields(field :: Tuple{Int, Int}) :: Set{Tuple{Int, Int}}
     row = stepnum(field[2]-1, 3)+1
     col = stepnum(field[1]-1, 3)+1
 
-    squares = cross(row:(row+3), col:(col+3)) :: Array{Tuple{Int, Int}, 1}
+    squares = cross(row:(row+2), col:(col+2)) :: Array{Tuple{Int, Int}, 1}
     vertical = map(1:9) do y
         (field[1], y)
     end
@@ -75,21 +75,7 @@ function sudoko_csp() :: Csp{Tuple{Int,Int},Int}
         end
     end
 
-    csp = Csp(variables, domains, vcat(constraints...))
-    # todo remove
-    checkUses(csp)
-    csp
-end
-
-function checkUses(csp)
-    list = csp.constraints .|> c -> c.uses
-    flat = vcat(list...)
-
-    for (a, b) in flat
-        if a > 9 || b > 9
-            println("($a, $b)")
-        end
-    end
+    Csp(variables, domains, vcat(constraints...))
 end
 
 function issolution(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
