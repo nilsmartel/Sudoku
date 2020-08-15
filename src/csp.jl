@@ -122,6 +122,12 @@ function ac3(csp, assignment)
                 # mutation of assignment
                 remove(var, value)
 
+                # if no values are left in domain of variable
+                # stop AC-3.
+                if assignment[var] |> size == 0
+                    return nothing
+                end
+
                 foreach(csp.constraints) do c
                     if var in c.uses[2:end]
                         push!(queue, c)
@@ -144,14 +150,15 @@ function backtrace(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
         end
     end
 
-    # pick next variable to be assigned
     # TODO: MRV or something clever
-    v = filter(assignment |> values) do key
+    # pick next variable to be assigned.
+    # filter out all variables with domain size of 1, since these have a fixed assignment
+    var = filter(keys(assignment)) do key
         size(assignment[key]) > 1
     end |> first
 
     for d in csp.domain
-        assignment[v] = d
+        assignment[var] = d
 
         solution = backtrace(csp, copy(assignment))
         if solution !== nothing
