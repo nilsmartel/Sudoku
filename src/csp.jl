@@ -8,7 +8,7 @@ end
 
 struct Csp{X, D}
     variables :: Array{X,1}
-    domains :: Array{D, 1}
+    domain :: Array{D, 1}
     constraints :: Array{Constraint{X},1}
 end
 
@@ -77,13 +77,17 @@ end
 
 
 
-function backtrace(csp, assignment, depth = 1)
+function backtrace(csp, assignment = nothing, depth = 1)
+    if assignment === nothing
+        assignment = Dict(var => Set(csp.domain) for var in csp.variables)
+    end
+
     println("depth = $depth")
 
     # enforce arc consistency
     # fail if one variable has an empty domain
     if ! ac3!(csp, assignment)
-        println("Arc consistency ruled out feasable domains")
+        println("Arc consistency ruled out feasable domain")
         return nothing
     end
 
@@ -103,7 +107,7 @@ function backtrace(csp, assignment, depth = 1)
     var = first(variables_left)
 
     for d in csp.domain
-        assignment[var] = d
+        assignment[var] = Set(d)
 
         solution = backtrace(csp, copy(assignment), depth+1)
         if solution !== nothing
@@ -113,4 +117,3 @@ function backtrace(csp, assignment, depth = 1)
 
     return nothing
 end
-
