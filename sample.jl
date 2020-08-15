@@ -1,7 +1,9 @@
-include("csp.jl")
+include("src/csp.jl")
+
+# illegal value
+n = 10
 
 # taken from easysudoku
-n = nothing
 let easy = [1 7 9  6 n 3  5 n 4;
             5 8 6  4 n n  1 9 n;
             n 2 4  9 n 5  n n n;
@@ -19,10 +21,10 @@ let easy = [1 7 9  6 n 3  5 n 4;
         easy[(x-1)*9 + y]
     end
 
-    assignmentset = Dict((x, y) => Int(get(x, y)) for x in 1:9, y in 1:9 if get(x, y) != nothing)
-
+    assignmentset = Dict((x, y) => get(x, y) for x in 1:9, y in 1:9 if get(x, y) !== n)
+    
     field = Sudoko(assignmentset)
 
-    soltution = solve_sudoko(field)
-    println(solution)
+    solution = solve_sudoko(field)
+    # println(solution)
 end

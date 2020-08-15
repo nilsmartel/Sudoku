@@ -29,8 +29,8 @@ end
 # returns a list of all fields a given position on a sudoku grid
 # needs to differ from
 function related_fields(field :: Tuple{Int, Int}) :: Set{Tuple{Int, Int}}
-    row = stepnum(field[2], 3)
-    col = stepnum(field[1], 3)
+    row = stepnum(field[2]-1, 3)+1
+    col = stepnum(field[1]-1, 3)+1
 
     squares = cross(row:(row+3), col:(col+3)) :: Array{Tuple{Int, Int}, 1}
     vertical = map(1:9) do y
@@ -75,18 +75,32 @@ function sudoko_csp() :: Csp{Tuple{Int,Int},Int}
         end
     end
 
-    Csp(variables, domains, vcat(constraints...))
+    csp = Csp(variables, domains, vcat(constraints...))
+    # todo remove
+    checkUses(csp)
+    csp
+end
+
+function checkUses(csp)
+    list = csp.constraints .|> c -> c.uses
+    flat = vcat(list...)
+
+    for (a, b) in flat
+        if a > 9 || b > 9
+            println("($a, $b)")
+        end
+    end
 end
 
 function issolution(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
     d = Dict{Tuple{Int, Int}, Int}()
-    for k in assignment.keys
+    for k in keys(assignment)
         v = assignment[k]
         if length(v) != 1
             return nothing
         end
 
-        d[k] = v.dict.keys[1]
+        d[k] = keys(v.dict)[1]
     end
 
     for constraint::Constraint in csp.constraints
@@ -102,7 +116,7 @@ end
 # enforces arc consistency using the ac3 algorithm
 function ac3(csp, assignment)
     assignment = assignment |> deepcopy
-    queue = csp.checkfunction |> copy
+    queue = csp.constraints |> copy
 
     function domain(var)
         assignment[var]
@@ -121,9 +135,10 @@ function ac3(csp, assignment)
             if length(some) == 0
                 # mutation of assignment
                 remove(var, value)
-                list = filter(csp.checkfunction) do cf
-                    if var in cf.uses[2:end]
-                        push!(queue, cf)
+
+                foreach(csp.constraints) do c
+                    if var in c.uses[2:end]
+                        push!(queue, c)
                     end
                 end
             end
@@ -171,8 +186,9 @@ end
 function solve_sudoko(field :: Sudoko)
     assignmentset = Dict((a,b) => Set(1:9) for a in 1:9, b in 1:9) :: Dict{Tuple{Int, Int}, Set{Int}}
 
-    for key in field.assignment.keys
-        assignmentset[key] = field.assignment[key] |> Set
+    for key in keys(field.assignment)
+        value = field.assignment[key]
+        assignmentset[key] = Set(value)
     end
 
     backtrace(sudoko_csp(), assignmentset)
