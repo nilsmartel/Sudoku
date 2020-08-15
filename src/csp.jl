@@ -143,10 +143,13 @@ end
 
 
 
-function backtrace(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
+function backtrace(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}}, depth = 1)
+    println("depth = $depth")
+
     # enforce arc consistency
     # fail if one variable has an empty domain
     if ! ac3!(csp, assignment)
+        println("Arc consistency ruled out feasable domains")
         return nothing
     end
 
@@ -168,7 +171,7 @@ function backtrace(csp, assignment :: Dict{Tuple{Int, Int}, Set{Int}})
     for d in csp.domain
         assignment[var] = d
 
-        solution = backtrace(csp, copy(assignment))
+        solution = backtrace(csp, copy(assignment), depth+1)
         if solution !== nothing
             return solution
         end
