@@ -82,5 +82,5 @@ function sudoko_csp() :: Csp{Tuple{Int,Int},Int}
         end
     end
 
-    Csp(variables, domains, vcat(constraints...))
+    Csp(variables, domains, vcat(constraints...), false)
 end
