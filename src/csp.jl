@@ -47,7 +47,7 @@ end
 function issolution(csp, assignment)
     d = Dict()
     for k in keys(assignment)
-        # set of values 
+        # set of values
         domain = assignment[k]
         if length(domain) != 1
             return nothing
@@ -58,7 +58,7 @@ function issolution(csp, assignment)
 
     # Check all constraints
     for constraint in csp.constraints
-        args = constraint.uses .|> var -> d[var]
+        args = constraint.uses .|> (var) -> d[var]
         if ! constraint.checkfunction(args...)
             return nothing
         end
