@@ -99,7 +99,7 @@ function ac3!(csp, assignment)
 
                 # if no values are left in domain of variable
                 # stop AC-3.
-                if assignment[var] |> length == 0
+                if domain(var) |> length == 0
                     return false
                 end
 
@@ -139,7 +139,7 @@ function backtrace(csp, assignment = nothing, depth = 1)
 
     # pick next variable to be assigned.
     # filter out all variables with domain size of 1, since these have a fixed assignment
-    variables_left = filter(keys(assignment)) do key
+    variables_left = filter(csp.variables) do key
         length(assignment[key]) > 1
     end
 
