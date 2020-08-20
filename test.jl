@@ -9,6 +9,7 @@ Testing out AC3
 function check(solution)
     if solution !== nothing
         println("(PASSED) solution found!")
+        print("   ")
         println(solution)
         return
     end
