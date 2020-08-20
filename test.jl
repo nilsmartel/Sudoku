@@ -16,23 +16,29 @@ function check(solution)
     println("(FAILED) no solution found!")
 end
 
-let csp = Csp([1, 2, 3], [1, 2], [
+begin
+    Csp([1, 2, 3], [1, 2], [
                                   Constraint([1, 2], ==)
                                   Constraint([1, 3], <)
                                  ])
-    # expected solution
-    expected = Dict(1 => 1, 2 => 1, 3 => 2)
+end |> backtrack |> check
 
-    solution = backtrace(csp)
-
-    check(solution)
-end
-
-let csp = begin
+begin
         constraints = [Constraint([a, b], !=) for a in 'a':'d', b in 'a':'b' if a != b]
         Csp('a':'d'|> collect, 1:4 |> collect, constraints, false)
-          end
+end |> backtrack |> check
 
-    solution = backtrace(csp)
-    check(solution)
-end
+
+begin
+    variables = 1:5 |> collect
+    domain = ['a', 'b', 'c']
+    constraints = [
+                   Constraint([1, 2], ==),
+                   Constraint([4, 5], ==),
+                   Constraint([1, 3], !=),
+                   Constraint([2, 4], !=),
+                   Constraint([3, 5], !=),
+                   Constraint([1, 3], >),
+                  ]
+    Csp(variables, domain, constraints)
+end|> backtrack |> check
