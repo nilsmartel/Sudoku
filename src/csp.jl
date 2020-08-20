@@ -146,7 +146,7 @@ function backtrace(csp, assignment = nothing)
     for d in csp.domain
         assignment[var] = Set(d)
 
-        solution = backtrace(csp, copy(assignment), depth+1)
+        solution = backtrace(csp, copy(assignment))
         if solution !== nothing
             return solution
         end
