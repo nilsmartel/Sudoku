@@ -12,7 +12,7 @@ function solve_sudoko(field :: Sudoko)
         assignmentset[key] = Set(value)
     end
 
-    backtrace(sudoko_csp(), assignmentset)
+    backtrack(sudoko_csp(), assignmentset)
 end
 
 """

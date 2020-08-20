@@ -117,7 +117,7 @@ end
 
 
 
-function backtrace(csp, assignment = nothing)
+function backtrack(csp, assignment = nothing)
     if assignment === nothing
         assignment = Dict(var => Set(csp.domain) for var in csp.variables)
     end
@@ -146,7 +146,7 @@ function backtrace(csp, assignment = nothing)
     for d in csp.domain
         assignment[var] = Set(d)
 
-        solution = backtrace(csp, copy(assignment))
+        solution = backtrack(csp, copy(assignment))
         if solution !== nothing
             return solution
         end
