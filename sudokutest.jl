@@ -28,5 +28,5 @@ let easy = [1 7 9  6 n 3  5 n 4;
     field = Sudoko(assignmentset)
 
     solution = solve_sudoko(field)
-    # println(solution)
+    println(solution)
 end
