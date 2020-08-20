@@ -117,17 +117,14 @@ end
 
 
 
-function backtrace(csp, assignment = nothing, depth = 1)
+function backtrace(csp, assignment = nothing)
     if assignment === nothing
         assignment = Dict(var => Set(csp.domain) for var in csp.variables)
     end
 
-    println("depth = $depth")
-
     # enforce arc consistency
     # fail if one variable has an empty domain
     if ! ac3!(csp, assignment)
-        println("Arc consistency ruled out feasable domain")
         return nothing
     end
 
